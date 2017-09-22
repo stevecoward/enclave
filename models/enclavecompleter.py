@@ -1,6 +1,7 @@
 from six import string_types
 from prompt_toolkit.completion import Completer, Completion
 
+
 class EnclaveWordCompleter(Completer):
     def __init__(self, module, WORD=False):
         self.module = module
@@ -16,9 +17,9 @@ class EnclaveWordCompleter(Completer):
             ]
         elif word_before_cursor == 'set':
             self.words = self.module.options
-        
+
         if (document.text.startswith('set') and len(document.text.split(' ')) > 2) or \
-            (document.text.startswith('load_opts') and len(document.text.split(' ')) > 1):
+                (document.text.startswith('load_opts') and len(document.text.split(' ')) > 1):
             self.words = []
 
         for word in self.words:

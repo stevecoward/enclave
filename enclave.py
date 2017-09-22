@@ -26,11 +26,13 @@ _/ __ \ /    \_/ ___\|  | \__  \\\\  \/ _/ __ \
 
 home_path = expanduser('~')
 if not os.path.exists('%s/.enclave' % home_path):
-    Logger.log('enclave folder doesn\'t exist, creating...', 'warning', spool=False)
+    Logger.log('enclave folder doesn\'t exist, creating...',
+               'warning', spool=False)
     os.mkdir('%s/.enclave' % home_path)
 
 initiated = datetime.now()
-Logger.log('\n--- new enclave session initiated (%s) ------------' % initiated.isoformat(), show=False)
+Logger.log('\n--- new enclave session initiated (%s) ------------' %
+           initiated.isoformat(), show=False)
 
 action = ''
 module = ModuleBase()
@@ -39,18 +41,21 @@ while True:
     Logger.log('', exclude_prefix=True)
     prompt_text = u'enclave> ' if action == '' else u'enclave:%s> ' % action
     user_input = prompt(prompt_text,
-        history=FileHistory('%s/.enclave/history.txt' % home_path),
-        auto_suggest=AutoSuggestFromHistory(),
-        completer=EnclaveWordCompleter(module, WORD=True),
-    )
+                        history=FileHistory(
+                            '%s/.enclave/history.txt' % home_path),
+                        auto_suggest=AutoSuggestFromHistory(),
+                        completer=EnclaveWordCompleter(module, WORD=True),
+                        )
 
-    Logger.log('%s%s' % (prompt_text, user_input), show=False, exclude_prefix=True)
+    Logger.log('%s%s' % (prompt_text, user_input),
+               show=False, exclude_prefix=True)
 
     if user_input in ['exit', 'quit']:
         closing_at = datetime.now()
         time_diff = closing_at - initiated
         Logger.log('exiting enclave, thanks for playing...', 'info')
-        Logger.log('\n--- closing enclave session ({timestamp}) [{elapsed:.2f}s] ------------------'.format(timestamp=closing_at.isoformat(), elapsed=time_diff.total_seconds()), show=False)
+        Logger.log('\n--- closing enclave session ({timestamp}) [{elapsed:.2f}s] ------------------'.format(
+            timestamp=closing_at.isoformat(), elapsed=time_diff.total_seconds()), show=False)
         sys.exit(0)
 
     if 'back' in user_input:
