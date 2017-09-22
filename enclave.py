@@ -23,13 +23,14 @@ _/ __ \ /    \_/ ___\|  | \__  \\\\  \/ _/ __ \
                         - a felux and syph0n jawn
 """, 'success', exclude_prefix=True, spool=False)
 
-initiated = datetime.now()
-Logger.log('\n--- new enclave session initiated (%s) ------------' % initiated.isoformat(), show=False)
 
 home_path = expanduser('~')
 if not os.path.exists('%s/.enclave' % home_path):
-    Logger.log('enclave folder doesn\t exist, creating...', 'warning', spool=False)
+    Logger.log('enclave folder doesn\'t exist, creating...', 'warning', spool=False)
     os.mkdir('%s/.enclave' % home_path)
+
+initiated = datetime.now()
+Logger.log('\n--- new enclave session initiated (%s) ------------' % initiated.isoformat(), show=False)
 
 action = ''
 module = ModuleBase()
