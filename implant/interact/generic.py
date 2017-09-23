@@ -1,4 +1,4 @@
-from models import BaseModuleKeywords, GenericModuleMethods
+from core import BaseModuleKeywords, GenericModuleMethods
 
 
 class GenericImplant(BaseModuleKeywords, GenericModuleMethods):

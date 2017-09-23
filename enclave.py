@@ -8,8 +8,8 @@ from terminaltables import AsciiTable
 from datetime import datetime
 
 from helpers import Logger
-from models import ModuleBase
-from models import EnclaveWordCompleter
+from core import ModuleBase
+from core import EnclaveWordCompleter
 
 from implant import load_module
 
