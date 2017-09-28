@@ -11,7 +11,7 @@ from helpers import Logger
 from core import ModuleBase
 from core import EnclaveWordCompleter
 
-from implant import load_module
+from modules.implant import load_module
 
 Logger.log("""                     .__                      
   ____   ____   ____ |  | _____ ___  __ ____  
