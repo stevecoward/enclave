@@ -68,6 +68,9 @@ while True:
     elif 'set' in user_input and action != '':
         module._set(filter(None, user_input.lstrip('set').split(' ')))
 
+    elif 'execute' in user_input:
+        module._exec(user_input)
+
     elif 'load_opts' in user_input and action != '':
         module._load_opts(user_input.lstrip('load_opts '))
 

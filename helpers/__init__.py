@@ -1,4 +1,5 @@
 from log import Logger
+from http import build_url, make_request
 
 def chunks(l, n):
     """Yield successive n-sized chunks from l."""

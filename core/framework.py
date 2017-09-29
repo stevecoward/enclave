@@ -1,5 +1,5 @@
 import re
-from helpers import Logger
+from helpers import Logger, build_url, make_request
 
 class GenericValidator():
     value = None
@@ -130,6 +130,9 @@ class GenericModuleMethods(GenericOptions):
         self.options_info = [[option['display_name'], '%s...' % option['value'][:60] if len(option['value']) > 60 else option['value'],
                               option['required'], option['help']] for option in self.options_list]
         return self.table_data + self.options_info
+
+    def _exec(self, options=''):
+        pass
 
     def _set(self, options):
         key, value = options
