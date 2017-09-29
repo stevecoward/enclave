@@ -7,7 +7,7 @@ from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from terminaltables import AsciiTable
 from datetime import datetime
 
-from helpers import Logger
+from helpers import Logger, chunks
 from core import ModuleBase
 from core import EnclaveWordCompleter
 
@@ -74,5 +74,20 @@ while True:
     elif 'options' in user_input:
         table = AsciiTable(module._option_info())
         table.title = 'options'
-        Logger.log('', exclude_prefix=True)
+        Logger.log(module.name_ascii, 'success', exclude_prefix=True)
         Logger.log(table.table, 'success', exclude_prefix=True)
+
+    elif 'info' in user_input:
+        Logger.log(module.name_ascii, exclude_prefix=True)
+        Logger.log('     - %s' % module.author, exclude_prefix=True)
+        Logger.log('', exclude_prefix=True)
+        Logger.log('', exclude_prefix=True)
+        Logger.log('module name:', exclude_prefix=True)
+        Logger.log('     %s' % module.name, exclude_prefix=True)
+        Logger.log('', exclude_prefix=True)
+        Logger.log('description:', exclude_prefix=True)
+        for chunk in chunks(module.description, 60):
+            Logger.log('     %s' % chunk.lstrip(' '), exclude_prefix=True)
+        Logger.log('', exclude_prefix=True)
+        Logger.log('options:', exclude_prefix=True)
+        Logger.log('     %s' % ' | '.join([option['name'] for option in module.options_list if option['required']]), exclude_prefix=True)

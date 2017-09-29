@@ -184,4 +184,5 @@ class BaseModuleKeywords(GenericKeywords):
             'set',
             'execute',
             'load_opts',
+            'info',
         ])
