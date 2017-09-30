@@ -131,6 +131,12 @@ class GenericModuleMethods(GenericOptions):
                               option['required'], option['help']] for option in self.options_list]
         return self.table_data + self.options_info
 
+    def _get_module_options(self):
+        options = {}
+        for item in self.options_list:
+            options[item['name']] = item['value']
+        return options
+
     def _exec(self, options=''):
         pass
 
