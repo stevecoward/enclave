@@ -5,11 +5,13 @@ from helpers.string import normalize_line_endings
 
 requests.packages.urllib3.disable_warnings()
 
+
 def build_url(host, port, ssl, path):
     prefix = 'http://'
     if int(port) == 443 or eval(ssl):
         prefix = 'https://'
     return '{prefix}{host}:{port}{path}'.format(prefix=prefix, host=host, port=port, path=path)
+
 
 def make_request(url, method, headers, payload, cookies):
     req = None
@@ -20,11 +22,14 @@ def make_request(url, method, headers, payload, cookies):
     }
     try:
         if method == 'GET':
-            req = requests.get(url, headers=headers, params=payload, cookies=cookies)
+            req = requests.get(url, headers=headers,
+                               params=payload, cookies=cookies)
         elif method == 'POST':
-            req = requests.post(url, headers=headers, data=payload, cookies=cookies, verify=False)
+            req = requests.post(url, headers=headers,
+                                data=payload, cookies=cookies, verify=False)
         else:
-            Logger.log('invalid request method used, re-check your settings and try again', 'fail')
+            Logger.log(
+                'invalid request method used, re-check your settings and try again', 'fail')
     except:
         pass
 
@@ -33,6 +38,7 @@ def make_request(url, method, headers, payload, cookies):
         return False
 
     return req
+
 
 def cookie_string_to_dict(cookie_string):
     kv_string_pattern = re.compile('(\w+)=(\w+);?\s?')
@@ -45,6 +51,7 @@ def cookie_string_to_dict(cookie_string):
         })
 
     return final_dict
+
 
 def parse_implant_response(content):
     response = normalize_line_endings(content)

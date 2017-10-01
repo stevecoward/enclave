@@ -93,4 +93,5 @@ while True:
             Logger.log('     %s' % chunk.lstrip(' '), exclude_prefix=True)
         Logger.log('', exclude_prefix=True)
         Logger.log('options:', exclude_prefix=True)
-        Logger.log('     %s' % ' | '.join([option['name'] for option in module.options_list if option['required']]), exclude_prefix=True)
+        Logger.log('     %s' % ' | '.join(
+            [option['name'] for option in module.options_list if option['required']]), exclude_prefix=True)

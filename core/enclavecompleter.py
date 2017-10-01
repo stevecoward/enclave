@@ -13,6 +13,7 @@ class EnclaveWordCompleter(Completer):
         word_before_cursor = document.get_word_before_cursor(WORD=self.WORD)
         if word_before_cursor == 'use':
             self.words = [
+                'implant/build/generic',
                 'implant/interact/generic',
             ]
         elif word_before_cursor == 'set':

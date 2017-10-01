@@ -1,5 +1,8 @@
 import re
+import os
+import tempfile
 from helpers import Logger, build_url, make_request
+
 
 class GenericValidator():
     value = None
@@ -14,53 +17,54 @@ class GenericValidator():
 class IntPortValidator(GenericValidator):
 
     def __init__(self, value):
-       GenericValidator.__init__(self, value)
+        GenericValidator.__init__(self, value)
 
     def _is_valid(self):
         return 1 <= int(self.value) <= 65535
 
+
 class UrlValidator(GenericValidator):
 
     url_pattern = re.compile(
-    u'^'
-    # protocol identifier
-    u'(?:(?:https?|ftp)://)'
-    # user:pass authentication
-    u'(?:\S+(?::\S*)?@)?'
-    u'(?:'
-    # IP address exclusion
-    # private & local networks
-    u'(?!(?:10|127)(?:\.\d{1,3}){3})'
-    u'(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})'
-    u'(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})'
-    # IP address dotted notation octets
-    # excludes loopback network 0.0.0.0
-    # excludes reserved space >= 224.0.0.0
-    # excludes network & broadcast addresses
-    # (first & last IP address of each class)
-    u'(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])'
-    u'(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}'
-    u'(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))'
-    u'|'
-    # host name
-    u'(?:(?:[a-z\u00a1-\uffff0-9]-?)*[a-z\u00a1-\uffff0-9]+)'
-    # domain name
-    u'(?:\.(?:[a-z\u00a1-\uffff0-9]-?)*[a-z\u00a1-\uffff0-9]+)*'
-    # TLD identifier
-    u'(?:\.(?:[a-z\u00a1-\uffff]{2,}))'
-    u')'
-    # port number
-    u'(?::\d{2,5})?'
-    # resource path
-    u'(?:/\S*)?'
-    u'$'
-    , re.UNICODE)
+        u'^'
+        # protocol identifier
+        u'(?:(?:https?|ftp)://)'
+        # user:pass authentication
+        u'(?:\S+(?::\S*)?@)?'
+        u'(?:'
+        # IP address exclusion
+        # private & local networks
+        u'(?!(?:10|127)(?:\.\d{1,3}){3})'
+        u'(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})'
+        u'(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})'
+        # IP address dotted notation octets
+        # excludes loopback network 0.0.0.0
+        # excludes reserved space >= 224.0.0.0
+        # excludes network & broadcast addresses
+        # (first & last IP address of each class)
+        u'(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])'
+        u'(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}'
+        u'(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))'
+        u'|'
+        # host name
+        u'(?:(?:[a-z\u00a1-\uffff0-9]-?)*[a-z\u00a1-\uffff0-9]+)'
+        # domain name
+        u'(?:\.(?:[a-z\u00a1-\uffff0-9]-?)*[a-z\u00a1-\uffff0-9]+)*'
+        # TLD identifier
+        u'(?:\.(?:[a-z\u00a1-\uffff]{2,}))'
+        u')'
+        # port number
+        u'(?::\d{2,5})?'
+        # resource path
+        u'(?:/\S*)?'
+        u'$', re.UNICODE)
 
     def __init__(self, value):
         GenericValidator.__init__(self, value)
 
     def _is_valid(self):
         return self.url_pattern.match(self.value)
+
 
 class HttpMethodValidator(GenericValidator):
 
@@ -70,6 +74,7 @@ class HttpMethodValidator(GenericValidator):
     def _is_valid(self):
         return self.value.upper() in ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
 
+
 class BooleanValidator(GenericValidator):
 
     def __init__(self, value):
@@ -77,6 +82,7 @@ class BooleanValidator(GenericValidator):
 
     def _is_valid(self):
         return True if self.value.upper() in ['TRUE', 'YES', 'Y', 'FALSE', 'NO', 'N'] else False
+
 
 class DictStringValidator(GenericValidator):
 
@@ -98,6 +104,7 @@ class DictStringValidator(GenericValidator):
             if len(self.value):
                 return True
         return False
+
 
 class GenericOptions():
     table_data = [['name', 'setting', 'required', 'description']]
@@ -164,7 +171,8 @@ class GenericModuleMethods(GenericOptions):
                 self.options_info = [[option['display_name'], option['value'],
                                       option['required'], option['help']] for option in self.options_list]
             else:
-                Logger.log('%s --> %s (failed validation)' % (key, value), 'fail')
+                Logger.log('%s --> %s (failed validation)' %
+                           (key, value), 'fail')
 
     def _load_opts(self, resource_path=''):
         opts = []
@@ -183,6 +191,21 @@ class GenericModuleMethods(GenericOptions):
                 opt_value = ' '.join(opt_split[2:])
                 if 'set' in opt:
                     self._set([opt_var, opt_value])
+
+    def _replace_template_vars(self, template_path, payload_options):
+        template_contents = ''
+        template_var_pattern = re.compile(r'({{2}\s+?([A-Za-z0-9_]+)\s+?}{2})')
+        with open(template_path, 'r') as fh:
+            template_contents = fh.read()
+
+        for match in template_var_pattern.findall(template_contents):
+            template_var, var_name = match
+
+            var = self.payloads[payload_options['os']][var_name]
+            template_contents = template_contents.replace(template_var, var)
+
+        with open(template_path, 'w') as fh:
+            fh.write(template_contents)
 
 
 class BaseModuleKeywords(GenericKeywords):
