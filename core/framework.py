@@ -105,6 +105,16 @@ class DictStringValidator(GenericValidator):
                 return True
         return False
 
+class EnumValidator(GenericValidator):
+    options = []
+
+    def __init__(self, value, options):
+        GenericValidator.__init__(self, value)
+        self.options = options
+
+    def _is_valid(self):
+        return self.value in self.options
+
 
 class GenericOptions():
     table_data = [['name', 'setting', 'required', 'description']]
@@ -144,6 +154,15 @@ class GenericModuleMethods(GenericOptions):
             options[item['name']] = item['value']
         return options
 
+    def _validate_options(self):
+        is_valid = True
+        required_options = [option['name'] for option in self.options_list if option['required']]
+        for option_name, option_value in self._get_module_options().iteritems():
+            if option_name in required_options and option_value == '':
+                Logger.log('option is required: %s' % option_name, 'fail')
+                is_valid = False
+        return is_valid
+
     def _exec(self, options=''):
         pass
 
@@ -162,6 +181,8 @@ class GenericModuleMethods(GenericOptions):
                 validator = BooleanValidator(value)
             elif option_item['type'] == 'kv_string':
                 validator = DictStringValidator(value)
+            elif option_item['type'] == 'enum':
+                validator = EnumValidator(value, option_item['enum_options'])
             else:
                 validator = GenericValidator(value)
 
@@ -214,6 +235,7 @@ class BaseModuleKeywords(GenericKeywords):
         self.words.extend([
             'options',
             'set',
+            'exec',
             'execute',
             'load_opts',
             'info',
