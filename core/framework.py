@@ -164,7 +164,10 @@ class GenericModuleMethods(GenericOptions):
         return is_valid
 
     def _exec(self, options=''):
-        pass
+        if not self._validate_options():
+            Logger.log('aborted exec due to invalid options', 'fail')
+            return False
+        return True
 
     def _set(self, options):
         key, value = options
