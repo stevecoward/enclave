@@ -15,6 +15,7 @@ class EnclaveWordCompleter(Completer):
             self.words = [
                 'implant/build/generic',
                 'implant/interact/generic',
+                'tomcat/foolishtom',
             ]
         elif word_before_cursor == 'set':
             self.words = self.module.options

@@ -204,7 +204,7 @@ class GenericModuleMethods(GenericOptions):
             try:
                 with open(resource_path, 'r') as fh:
                     opts = fh.read()
-                    opts = opts.split('\n')
+                    opts = filter(None, opts.split('\n'))
             except:
                 Logger.log(
                     'error opening resource file. ensure you use absolute file paths...', 'fail')
