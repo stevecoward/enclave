@@ -1,5 +1,5 @@
 from log import Logger
-from http import build_url, make_request, parse_implant_response
+from http import parse_implant_response, WebRequest
 from string import normalize_line_endings
 
 

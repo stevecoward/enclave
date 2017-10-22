@@ -1,7 +1,5 @@
 import re
-import os
-import tempfile
-from helpers import Logger, build_url, make_request
+from helpers import Logger
 
 
 class GenericValidator():
@@ -230,6 +228,19 @@ class GenericModuleMethods(GenericOptions):
 
         with open(template_path, 'w') as fh:
             fh.write(template_contents)
+
+    def _get_input(self, prompt_fields):
+        host, prompt = prompt_fields
+        module_prompt = '[{name_short}][{host}] {prompt}> '.format(
+            name_short=self.name_short, host=host, prompt=prompt)
+        user_input = raw_input(module_prompt)
+        Logger.log('%s %s' % (module_prompt, user_input),
+            exclude_prefix=True, show=False)
+        if user_input in ['quit', 'exit']:
+            Logger.log(
+                'exiting... don\\t forget to clean up!', 'warning')
+            return False
+        return user_input
 
 
 class BaseModuleKeywords(GenericKeywords):

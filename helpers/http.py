@@ -5,39 +5,33 @@ from helpers.string import normalize_line_endings
 
 requests.packages.urllib3.disable_warnings()
 
+class WebRequest():
+    def __init__(self):
+        self.session = requests.Session()
 
-def build_url(host, port, ssl, path):
-    prefix = 'http://'
-    if int(port) == 443 or eval(ssl):
-        prefix = 'https://'
-    return '{prefix}{host}:{port}{path}'.format(prefix=prefix, host=host, port=port, path=path)
+    @staticmethod
+    def build_url(host, port, ssl, path):
+        prefix = 'http://'
+        if int(port) == 443 or eval(ssl):
+            prefix = 'https://'
+        return '{prefix}{host}:{port}{path}'.format(prefix=prefix, host=host, port=port, path=path)
 
-
-def make_request(url, method, headers, payload, cookies):
-    req = None
-    method = method.upper()
-    cookies = cookie_string_to_dict(cookies)
-    proxies = {
-        'http': 'http://127.0.0.1:8080',
-    }
-    try:
-        if method == 'GET':
-            req = requests.get(url, headers=headers,
-                               params=payload, cookies=cookies)
-        elif method == 'POST':
-            req = requests.post(url, headers=headers,
-                                data=payload, cookies=cookies, verify=False)
+    def make_request(self, url, method, headers, payload, cookies):
+        cookies = cookie_string_to_dict(cookies)
+        response = None
+        if method.lower() == 'get':
+            response = self.session.get(url, headers=headers, params=payload, cookies=cookies)
+        elif method.lower() == 'post':
+            response = self.session.post(url, headers=headers, params=payload, cookies=cookies)
         else:
-            Logger.log(
-                'invalid request method used, re-check your settings and try again', 'fail')
-    except:
-        pass
+            Logger.log('invalid request method used, re-check your settings and try again', 'fail')
+            return response
 
-    if not req or not req.ok:
-        Logger.log('got an error making request to target %s' % url, 'fail')
-        return False
+        if not response or not response.ok:
+            Logger.log('got an error making request to target %s' % url, 'fail')
+            return False
 
-    return req
+        return response
 
 
 def cookie_string_to_dict(cookie_string):
