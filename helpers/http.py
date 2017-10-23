@@ -17,7 +17,7 @@ class WebRequest():
         return '{prefix}{host}:{port}{path}'.format(prefix=prefix, host=host, port=port, path=path)
 
     def make_request(self, url, method, headers, payload, cookies):
-        cookies = cookie_string_to_dict(cookies)
+        cookies = cookie_string_to_dict(cookies) if len(cookies) else {}
         response = None
         if method.lower() == 'get':
             response = self.session.get(url, headers=headers, params=payload, cookies=cookies)
