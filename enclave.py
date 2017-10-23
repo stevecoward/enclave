@@ -10,6 +10,7 @@ from datetime import datetime
 from helpers import Logger, chunks
 from core import ModuleBase
 from core import EnclaveWordCompleter
+from core import EnclaveSession
 
 from modules import load_module
 
@@ -30,10 +31,7 @@ if not os.path.exists('%s/.enclave' % home_path):
                'warning', spool=False)
     os.mkdir('%s/.enclave' % home_path)
 
-initiated = datetime.now()
-Logger.log('\n--- new enclave session initiated (%s) ------------' %
-           initiated.isoformat(), show=False)
-
+session = EnclaveSession()
 action = ''
 module = ModuleBase()
 
@@ -51,11 +49,7 @@ while True:
                show=False, exclude_prefix=True)
 
     if user_input in ['exit', 'quit']:
-        closing_at = datetime.now()
-        time_diff = closing_at - initiated
-        Logger.log('exiting enclave, thanks for playing...', 'info')
-        Logger.log('\n--- closing enclave session ({timestamp}) [{elapsed:.2f}s] ------------------'.format(
-            timestamp=closing_at.isoformat(), elapsed=time_diff.total_seconds()), show=False)
+        session.close()
         sys.exit(0)
 
     if 'back' in user_input:

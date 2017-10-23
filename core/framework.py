@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from helpers import Logger
 
 
@@ -242,6 +243,24 @@ class GenericModuleMethods(GenericOptions):
             return False
         return user_input
 
+class EnclaveSession():
+    def __init__(self):
+        self.initiated = datetime.now()
+        Logger.log('\n--- new enclave session initiated (%s) ------------\n' %
+           self.initiated.isoformat(), show=False)
+        
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def close(self):
+        self.closing_at = datetime.now()
+        time_diff = self.closing_at - self.initiated
+        Logger.log('exiting enclave, thanks for playing...', 'info')
+        Logger.log('\n--- closing enclave session ({timestamp}) [{elapsed:.2f}s] ------------------'.format(
+            timestamp=self.closing_at.isoformat(), elapsed=time_diff.total_seconds()), show=False)
 
 class BaseModuleKeywords(GenericKeywords):
     def __init__(self):
