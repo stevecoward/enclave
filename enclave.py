@@ -1,5 +1,4 @@
 import sys
-import os
 from os.path import expanduser
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
@@ -26,14 +25,9 @@ _/ __ \ /    \_/ ___\|  | \__  \\\\  \/ _/ __ \
 
 
 home_path = expanduser('~')
-if not os.path.exists('%s/.enclave' % home_path):
-    Logger.log('enclave folder doesn\'t exist, creating...',
-               'warning', spool=False)
-    os.mkdir('%s/.enclave' % home_path)
-
 session = EnclaveSession()
-action = ''
 module = ModuleBase()
+action = ''
 
 while True:
     Logger.log('', exclude_prefix=True)

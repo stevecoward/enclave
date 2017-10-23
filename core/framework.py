@@ -1,4 +1,6 @@
 import re
+import os
+from os.path import expanduser
 from datetime import datetime
 from helpers import Logger
 
@@ -245,6 +247,12 @@ class GenericModuleMethods(GenericOptions):
 
 class EnclaveSession():
     def __init__(self):
+        home_path = expanduser('~')
+        if not os.path.exists('%s/.enclave' % home_path):
+            Logger.log('enclave folder doesn\'t exist, creating...',
+                       'warning', spool=False)
+            os.mkdir('%s/.enclave' % home_path)
+
         self.initiated = datetime.now()
         Logger.log('\n--- new enclave session initiated (%s) ------------\n' %
            self.initiated.isoformat(), show=False)
