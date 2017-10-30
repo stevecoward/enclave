@@ -5,6 +5,7 @@ from helpers.string import normalize_line_endings
 
 requests.packages.urllib3.disable_warnings()
 
+
 class WebRequest():
     def __init__(self):
         self.session = requests.Session()
@@ -20,15 +21,19 @@ class WebRequest():
         cookies = cookie_string_to_dict(cookies) if len(cookies) else {}
         response = None
         if method.lower() == 'get':
-            response = self.session.get(url, headers=headers, params=payload, cookies=cookies)
+            response = self.session.get(
+                url, headers=headers, params=payload, cookies=cookies)
         elif method.lower() == 'post':
-            response = self.session.post(url, headers=headers, data=payload, cookies=cookies)
+            response = self.session.post(
+                url, headers=headers, data=payload, cookies=cookies)
         else:
-            Logger.log('invalid request method used, re-check your settings and try again', 'fail')
+            Logger.log(
+                'invalid request method used, re-check your settings and try again', 'fail')
             return response
 
         if not response or not response.ok:
-            Logger.log('got an error making request to target %s' % url, 'fail')
+            Logger.log('got an error making request to target %s' %
+                       url, 'fail')
             return False
 
         return response

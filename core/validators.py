@@ -102,6 +102,7 @@ class DictStringValidator(GenericValidator):
                 return True
         return False
 
+
 class EnumValidator(GenericValidator):
     options = []
 

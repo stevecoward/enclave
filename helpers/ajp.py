@@ -17,6 +17,8 @@ import struct
 # https://tomcat.apache.org/connectors-doc/ajp/ajpv13a.html
 
 #global helpers
+
+
 def pack_string(s):
     if s is None:
         return struct.pack(">h", -1)
@@ -24,21 +26,25 @@ def pack_string(s):
     l = len(s)
     return struct.pack(">H%dsb" % l, l, s, 0)
 
+
 def unpack(stream, fmt):
     size = struct.calcsize(fmt)
     buf = stream.read(size)
     return struct.unpack(fmt, buf)
 
+
 def unpack_string(stream):
     size, = unpack(stream, ">h")
-    if size == -1: # null string
+    if size == -1:  # null string
         return None
     res, = unpack(stream, "%ds" % size)
-    stream.read(1) # \0
+    stream.read(1)  # \0
     return res
-    
+
+
 class NotFoundException(Exception):
     pass
+
 
 class AjpBodyRequest(object):
     # server == web server, container == servlet
@@ -49,7 +55,6 @@ class AjpBodyRequest(object):
         self.data_stream = data_stream
         self.data_len = data_len
         self.data_direction = data_direction
-
 
     def serialize(self):
         data = self.data_stream.read(AjpBodyRequest.MAX_REQUEST_LENGTH)
@@ -67,7 +72,6 @@ class AjpBodyRequest(object):
 
         return header + res
 
-
     def send_and_receive(self, socket, stream):
         while True:
             data = self.serialize()
@@ -78,6 +82,7 @@ class AjpBodyRequest(object):
 
             if r.prefix_code == AjpResponse.SEND_HEADERS or len(data) == 4:
                 break
+
 
 class AjpForwardRequest(object):
     """
@@ -98,27 +103,30 @@ class AjpForwardRequest(object):
 
     """
 
-    _, OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK, ACL, REPORT, VERSION_CONTROL, CHECKIN, CHECKOUT, UNCHECKOUT, SEARCH, MKWORKSPACE, UPDATE, LABEL, MERGE, BASELINE_CONTROL, MKACTIVITY = range(28)
+    _, OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK, UNLOCK, ACL, REPORT, VERSION_CONTROL, CHECKIN, CHECKOUT, UNCHECKOUT, SEARCH, MKWORKSPACE, UPDATE, LABEL, MERGE, BASELINE_CONTROL, MKACTIVITY = range(
+        28)
 
-    REQUEST_METHODS = {'GET': GET, 'POST': POST, 'HEAD': HEAD, 'OPTIONS': OPTIONS, 'PUT': PUT, 'DELETE': DELETE, 'TRACE': TRACE}
+    REQUEST_METHODS = {'GET': GET, 'POST': POST, 'HEAD': HEAD,
+                       'OPTIONS': OPTIONS, 'PUT': PUT, 'DELETE': DELETE, 'TRACE': TRACE}
 
     # server == web server, container == servlet
     SERVER_TO_CONTAINER, CONTAINER_TO_SERVER = range(2)
 
     COMMON_HEADERS = ["SC_REQ_ACCEPT",
-        "SC_REQ_ACCEPT_CHARSET", "SC_REQ_ACCEPT_ENCODING", "SC_REQ_ACCEPT_LANGUAGE", "SC_REQ_AUTHORIZATION", 
-        "SC_REQ_CONNECTION", "SC_REQ_CONTENT_TYPE", "SC_REQ_CONTENT_LENGTH", "SC_REQ_COOKIE", "SC_REQ_COOKIE2",
-        "SC_REQ_HOST", "SC_REQ_PRAGMA", "SC_REQ_REFERER", "SC_REQ_USER_AGENT"
-    ]
+                      "SC_REQ_ACCEPT_CHARSET", "SC_REQ_ACCEPT_ENCODING", "SC_REQ_ACCEPT_LANGUAGE", "SC_REQ_AUTHORIZATION",
+                      "SC_REQ_CONNECTION", "SC_REQ_CONTENT_TYPE", "SC_REQ_CONTENT_LENGTH", "SC_REQ_COOKIE", "SC_REQ_COOKIE2",
+                      "SC_REQ_HOST", "SC_REQ_PRAGMA", "SC_REQ_REFERER", "SC_REQ_USER_AGENT"
+                      ]
 
-    ATTRIBUTES = ["context", "servlet_path", "remote_user", "auth_type", "query_string", "route", "ssl_cert", "ssl_cipher", "ssl_session", "req_attribute", "ssl_key_size", "secret", "stored_method"]
+    ATTRIBUTES = ["context", "servlet_path", "remote_user", "auth_type", "query_string", "route",
+                  "ssl_cert", "ssl_cipher", "ssl_session", "req_attribute", "ssl_key_size", "secret", "stored_method"]
 
     def __init__(self, data_direction=None):
         self.prefix_code = 0x02
         self.method = None
-        self.protocol = None   
-        self.req_uri = None  
-        self.remote_addr = None   
+        self.protocol = None
+        self.req_uri = None
+        self.remote_addr = None
         self.remote_host = None
         self.server_name = None
         self.server_port = None
@@ -245,7 +253,7 @@ class AjpForwardRequest(object):
                 h_name = AjpForwardRequest.COMMON_HEADERS[code - 0xA001]
             else:
                 h_name = unpack(stream, "%ds" % code)
-                stream.read(1) # \0
+                stream.read(1)  # \0
 
             h_value = unpack_string(stream)
 
@@ -277,6 +285,7 @@ class AjpForwardRequest(object):
                 break
 
         return res
+
 
 class AjpResponse(object):
     """
@@ -310,13 +319,14 @@ class AjpResponse(object):
     """
 
     # prefix codes
-    _,_,_,SEND_BODY_CHUNK, SEND_HEADERS, END_RESPONSE, GET_BODY_CHUNK = range(7)
+    _, _, _, SEND_BODY_CHUNK, SEND_HEADERS, END_RESPONSE, GET_BODY_CHUNK = range(
+        7)
 
     # send headers codes
     COMMON_SEND_HEADERS = [
-            "Content-Type", "Content-Language", "Content-Length", "Date", "Last-Modified", 
-            "Location", "Set-Cookie", "Set-Cookie2", "Servlet-Engine", "Status", "WWW-Authenticate"
-            ]
+        "Content-Type", "Content-Language", "Content-Length", "Date", "Last-Modified",
+        "Location", "Set-Cookie", "Set-Cookie2", "Servlet-Engine", "Status", "WWW-Authenticate"
+    ]
 
     def parse(self, stream):
         # read headers
@@ -340,18 +350,18 @@ class AjpResponse(object):
         self.response_headers = {}
         for i in range(self.num_headers):
             code, = unpack(stream, ">H")
-            if code <= 0xA000: # custom header
+            if code <= 0xA000:  # custom header
                 h_name, = unpack(stream, "%ds" % code)
-                stream.read(1) # \0
+                stream.read(1)  # \0
                 h_value = unpack_string(stream)
             else:
-                h_name = AjpResponse.COMMON_SEND_HEADERS[code-0xA001]
+                h_name = AjpResponse.COMMON_SEND_HEADERS[code - 0xA001]
                 h_value = unpack_string(stream)
             self.response_headers[h_name] = h_value
 
     def parse_send_body_chunk(self, stream):
         self.data_length, = unpack(stream, ">H")
-        self.data = stream.read(self.data_length+1)
+        self.data = stream.read(self.data_length + 1)
 
     def parse_end_response(self, stream):
         self.reuse, = unpack(stream, "b")

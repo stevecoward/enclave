@@ -44,7 +44,8 @@ class GenericModuleMethods(GenericOptions):
 
     def _validate_options(self):
         is_valid = True
-        required_options = [option['name'] for option in self.options_list if option['required']]
+        required_options = [option['name']
+                            for option in self.options_list if option['required']]
         for option_name, option_value in self._get_module_options().iteritems():
             if option_name in required_options and option_value == '':
                 Logger.log('option is required: %s' % option_name, 'fail')
@@ -125,7 +126,7 @@ class GenericModuleMethods(GenericOptions):
             name_short=self.name_short, host=host, prompt=prompt)
         user_input = raw_input(module_prompt)
         Logger.log('%s %s' % (module_prompt, user_input),
-            exclude_prefix=True, show=False)
+                   exclude_prefix=True, show=False)
         if user_input in ['quit', 'exit']:
             Logger.log(
                 'exiting... don\\t forget to clean up!', 'warning')

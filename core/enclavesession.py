@@ -3,6 +3,7 @@ from datetime import datetime
 from os.path import expanduser
 from helpers import Logger
 
+
 class EnclaveSession():
     def __init__(self):
         home_path = expanduser('~')
@@ -13,8 +14,8 @@ class EnclaveSession():
 
         self.initiated = datetime.now()
         Logger.log('\n--- new enclave session initiated (%s) ------------\n' %
-           self.initiated.isoformat(), show=False)
-        
+                   self.initiated.isoformat(), show=False)
+
     def __enter__(self):
         pass
 
