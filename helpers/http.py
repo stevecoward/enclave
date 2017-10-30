@@ -22,7 +22,7 @@ class WebRequest():
         if method.lower() == 'get':
             response = self.session.get(url, headers=headers, params=payload, cookies=cookies)
         elif method.lower() == 'post':
-            response = self.session.post(url, headers=headers, params=payload, cookies=cookies)
+            response = self.session.post(url, headers=headers, data=payload, cookies=cookies)
         else:
             Logger.log('invalid request method used, re-check your settings and try again', 'fail')
             return response

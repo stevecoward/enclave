@@ -16,6 +16,7 @@ class EnclaveWordCompleter(Completer):
                 'implant/build/generic',
                 'implant/interact/generic',
                 'implant/interact/slowcheetah',
+                'implant/interact/asplant',
                 'tomcat/foolishtom',
             ]
         elif word_before_cursor == 'set':
