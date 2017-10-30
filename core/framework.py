@@ -141,6 +141,7 @@ class ModuleBase(GenericKeywords):
 
 class GenericModuleMethods(GenericOptions):
     def __init__(self):
+        Logger.log(self.name_ascii, 'success', exclude_prefix=True)
         GenericOptions.__init__(self)
 
     def _option_info(self):
