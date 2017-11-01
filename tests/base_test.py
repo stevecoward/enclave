@@ -1,2 +1,2 @@
 def test():
-	pass
+	assert False
