@@ -1,4 +1,5 @@
 import requests
+from helpers.string import normalize_line_endings
 
 requests.packages.urllib3.disable_warnings()
 
@@ -75,3 +76,10 @@ class Client():
         self.headers.update({
             key: value,
         })
+
+    def _parse_response(self):
+        response = normalize_line_endings(self.response.content)
+        response_split = filter(None, response.split('\n'))
+        cwd, pwd = response_split[0], response_split[-1]
+        contents = '\n'.join(response_split[1:-1])
+        return (cwd, pwd, contents)
