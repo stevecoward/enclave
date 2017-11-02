@@ -10,7 +10,7 @@ class Client():
     user_agent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)'
 
     def __repr__(self):
-        return '<HttpClient {hostname}:{port}'.format(hostname=self.hostname, port=self.port)
+        return '<HttpClient {hostname}:{port}>'.format(hostname=self.host, port=self.port)
 
     def __init__(self, host, port=80, ssl=False, proxies={}, username='', password=''):
         self.host = host
@@ -23,7 +23,8 @@ class Client():
 
     def _get_url(self, uri):
         prefix = 'http://'
-        if self.port == 443 or eval(self.ssl):
+        is_ssl = self.ssl if isinstance(self.ssl, bool) else eval(self.ssl)
+        if self.port == 443 or is_ssl:
             prefix = 'https://'
         return '{prefix}{host}:{port}{uri}'.format(prefix=prefix, host=self.host, port=self.port, uri=uri)
 
@@ -44,7 +45,7 @@ class Client():
 
     def _set_host_header(self, value):
         self.headers.update({
-            'Host': value if self.port not in [80, 443] else '%s:%s' % (self.value, self.port),
+            'Host': value if self.port in [80, 443] else '%s:%s' % (value, self.port),
         })
 
     def _set_useragent_header(self, value):
