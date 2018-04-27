@@ -1,4 +1,5 @@
 import requests
+from helpers.log import Logger
 from helpers.string import normalize_line_endings
 
 requests.packages.urllib3.disable_warnings()
@@ -20,6 +21,10 @@ class Client():
         self.username = username
         self.password = password
         self.session = requests.Session()
+        self.proxies = {
+            # 'https': 'https://127.0.0.1:8080',
+            # 'http': 'http://127.0.0.1:8080',
+        }
 
     def _get_url(self, uri):
         prefix = 'http://'
@@ -28,17 +33,20 @@ class Client():
             prefix = 'https://'
         return '{prefix}{host}:{port}{uri}'.format(prefix=prefix, host=self.host, port=self.port, uri=uri)
 
-    def _request(self, uri, method, payload):
+    def _request(self, uri, method, payload, payload_type=''):
         self.response = None
         if method.lower() == 'get':
-            self.response = self.session.get(self._get_url(uri), headers=self.headers, params=payload, cookies=self.cookies)
+            self.response = self.session.get(self._get_url(uri), headers=self.headers, params=payload, cookies=self.cookies, proxies=self.proxies, verify=False)
         elif method.lower() == 'post':
-            self.response = self.session.post(self._get_url(uri), headers=self.headers, data=payload, cookies=self.cookies, proxies={'http': 'http://127.0.0.1:8080'})
+            if payload_type == 'json':
+                self.response = self.session.post(self._get_url(uri), headers=self.headers, json=payload, cookies=self.cookies, proxies=self.proxies, verify=False)
+            else:
+                self.response = self.session.post(self._get_url(uri), headers=self.headers, params=payload, cookies=self.cookies, proxies=self.proxies, verify=False)
         else:
             Logger.log('invalid request method used, re-check your settings and try again', 'fail')
 
         if not self.response or not self.response.ok:
-            Logger.log('got an error making request to target %s' % url, 'fail')
+            Logger.log('got an error making request to target %s' % uri, 'fail')
 
     def _set_cookie_header(self, cookies):
         self.cookies = cookies
@@ -55,7 +63,7 @@ class Client():
 
     def _set_auth_header(self, value):
         self.headers.update({
-            'Authorization': value
+            'Authorization': 'Bearer {}'.format(value)
         })
 
     def _set_connection_header(self, value):
