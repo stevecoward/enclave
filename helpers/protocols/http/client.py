@@ -4,8 +4,53 @@ from helpers.string import normalize_line_endings
 
 requests.packages.urllib3.disable_warnings()
 
-
 class Client():
+    def __init__(self, host, port, uri='/', ssl=False, debug=False):
+        self.headers = {}
+        self.host = host
+        self.port = port
+        self.uri = uri
+        self.ssl = True if (ssl == True or port == 443) else ssl
+        self.cookies = {}
+        self.proxies = {
+            'https': 'https://127.0.0.1:8080',
+            'http': 'http://127.0.0.1:8080',
+        } if debug else {}
+        self.session = requests.Session()
+        self._build_url(self.uri)
+
+    def __repr__(self):
+        return '<HttpClient {hostname}:{port}{uri}>'.format(hostname=self.host, port=self.port, uri=self.uri)
+
+    def _build_url(self, uri):
+        prefix = 'https://' if self.ssl else 'http://'
+        self.url = '{prefix}{host}:{port}{uri}'.format(prefix=prefix, host=self.host, port=self.port, uri=uri)
+        return self.url
+
+    def _handle_response(self, response):
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            Logger.log('received error {status_code} making a request to target {uri}'.format(status_code=e.response.status_code, uri=self.uri), 'fail')
+        finally:
+            self.response = (response.status_code, normalize_line_endings(response.content))
+        return self.response
+
+    def set_header(self, key, value):
+        self.headers.update({
+            '{}'.format(key.capitalize()): value,
+        })
+
+    def get(self, uri, params={}):
+        return self._handle_response(self.session.get(self._build_url(uri), params=params, headers=self.headers, cookies=self.cookies, proxies=self.proxies, verify=False))
+
+    def post(self, uri, params={}, content_type='form'):
+        if content_type == 'form':
+            return self._handle_response(self.session.post(self._build_url(uri), params=params, headers=self.headers, cookies=self.cookies, proxies=self.proxies, verify=False))
+        elif content_type == 'json':
+            return self._handle_response(self.session.post(self._build_url(uri), json=params, headers=self.headers, cookies=self.cookies, proxies=self.proxies, verify=False))
+
+class Client2():
     headers = {}
     cookies = {}
     user_agent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)'
