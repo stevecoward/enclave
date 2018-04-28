@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from os.path import expanduser
 from helpers import Logger
-
+from core.models import database, enclave_tables
 
 class EnclaveSession():
     def __init__(self):
@@ -11,6 +11,8 @@ class EnclaveSession():
             Logger.log('enclave folder doesn\'t exist, creating...',
                        'warning', spool=False)
             os.mkdir('%s/.enclave' % home_path)
+
+        database.create_tables(enclave_tables)
 
         self.initiated = datetime.now()
         Logger.log('\n--- new enclave session initiated (%s) ------------\n' %

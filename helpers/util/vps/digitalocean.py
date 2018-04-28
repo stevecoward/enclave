@@ -3,6 +3,7 @@ import uuid
 import hashlib
 from helpers.log import Logger
 from helpers.protocols.http.client import Client as HttpClient
+from core.models.puppet import Puppet
 
 class DigitalOceanVps():
     
@@ -55,4 +56,14 @@ class DigitalOceanVps():
         }, content_type='json')
         if create_status == 202:
             create_response = json.loads(create_response)
+            
+            puppet = Puppet.create(vps='digitalocean', 
+                uuid=create_response['droplet']['id'], 
+                name=create_response['droplet']['name'], 
+                ram=create_response['droplet']['memory'], 
+                cpu=create_response['droplet']['vcpus'], 
+                disk=create_response['droplet']['disk'], 
+                created=create_response['droplet']['created_at'],
+            )
+
             Logger.log('created do puppet:{}'.format(create_response['droplet']['id']))
