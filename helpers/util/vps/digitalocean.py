@@ -43,7 +43,18 @@ class DigitalOceanVps():
         elif 200 <= status < 300:
             found_key = json.loads(found_key)
             if fingerprint == found_key['ssh_key']['fingerprint']:
-                Logger.log('pubkey confirmed, ready to touch', 'success')
+                Logger.log('pubkey confirmed, ready to touch', 'info')
+
+    def get_ip(self, id):
+        ip_address = ''
+        status, droplet = self.client.get('/v2/droplets/{}'.format(id))
+        if status == 404:
+            Logger.log('droplet not available, removing stale db record', 'info')
+            Puppet.get(id).delete_instance()
+        elif 200 <= status < 300:
+            droplet = json.loads(droplet)
+            ip_address = droplet['droplet']['networks']['v4'][0]['ip_address']
+        return ip_address
 
     def create_droplet(self, fingerprint):
         create_status, create_response = self.client.post('/v2/droplets', params={
@@ -66,4 +77,4 @@ class DigitalOceanVps():
                 created=create_response['droplet']['created_at'],
             )
 
-            Logger.log('created do puppet:{}'.format(create_response['droplet']['id']))
+            Logger.log('created do puppet:{}'.format(create_response['droplet']['id']), 'success')

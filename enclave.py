@@ -84,3 +84,6 @@ while True:
         Logger.log('options:', exclude_prefix=True)
         Logger.log('     %s' % ' | '.join(
             [option['name'] for option in module.options_list if option['required']]), exclude_prefix=True)
+
+    elif user_input in module.words:
+        module.call_action(user_input)

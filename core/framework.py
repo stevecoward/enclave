@@ -56,6 +56,7 @@ class GenericModuleMethods(GenericOptions):
         if not self._validate_options():
             Logger.log('aborted exec due to invalid options', 'fail')
             return False
+        self.options = self._get_module_options()
         return True
 
     def _set(self, options):
@@ -141,7 +142,6 @@ class BaseModuleKeywords(GenericKeywords):
             'options',
             'set',
             'exec',
-            'execute',
             'load_opts',
             'info',
         ])

@@ -2,3 +2,6 @@ click>=6.7
 prompt-toolkit>=1.0.15
 terminaltables>=3.1.0
 requests>=2.18.4
+Flask==1.0
+peewee==3.3.1
+delorean
