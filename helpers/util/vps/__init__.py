@@ -11,4 +11,4 @@ class Vps():
 
     def create(self, *args, **kwargs):
         if self.name == 'digitalocean':
-            self.vps.create_droplet(kwargs['pubkey_fingerprint'])
+            self.vps.create_droplet(kwargs['vps'], kwargs['pubkey_fingerprint'])

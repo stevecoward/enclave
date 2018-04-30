@@ -53,10 +53,14 @@ class DigitalOceanVps():
             Puppet.get(id).delete_instance()
         elif 200 <= status < 300:
             droplet = json.loads(droplet)
-            ip_address = droplet['droplet']['networks']['v4'][0]['ip_address']
+            ip_address = None
+            if len(droplet['droplet']['networks']['v4']):
+                ip_address = droplet['droplet']['networks']['v4'][0]['ip_address']
+            else:
+                Logger.log('droplet doesn\'t have an ip address yet...', 'info')
         return ip_address
 
-    def create_droplet(self, fingerprint):
+    def create_droplet(self, vps_hash, fingerprint):
         create_status, create_response = self.client.post('/v2/droplets', params={
             'name': '{}'.format(uuid.uuid4()),
             'region': 'nyc3',
@@ -68,7 +72,7 @@ class DigitalOceanVps():
         if create_status == 202:
             create_response = json.loads(create_response)
             
-            puppet = Puppet.create(vps='digitalocean', 
+            puppet = Puppet.create(vps=vps_hash, 
                 uuid=create_response['droplet']['id'], 
                 name=create_response['droplet']['name'], 
                 ram=create_response['droplet']['memory'], 

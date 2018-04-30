@@ -18,6 +18,7 @@ class EnclaveWordCompleter(Completer):
                 'implant/interact/slowcheetah',
                 'implant/interact/asplant',
                 'tomcat/foolishtom',
+                'puppet',
                 'puppet/touch',
             ]
         elif word_before_cursor == 'set':

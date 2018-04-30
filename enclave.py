@@ -85,5 +85,5 @@ while True:
         Logger.log('     %s' % ' | '.join(
             [option['name'] for option in module.options_list if option['required']]), exclude_prefix=True)
 
-    elif user_input in module.words:
+    elif len(filter(None, [user_input.startswith(x) for x in module.words])):
         module.call_action(user_input)

@@ -100,11 +100,15 @@ class GenericModuleMethods(GenericOptions):
                     'error opening resource file. ensure you use absolute file paths...', 'fail')
 
             for opt in opts:
-                opt_split = opt.split(' ')
-                opt_var = opt_split[1]
-                opt_value = ' '.join(opt_split[2:])
-                if 'set' in opt:
+                if opt.startswith('set'):
+                    opt_split = opt.split(' ')
+                    opt_var = opt_split[1]
+                    opt_value = ' '.join(opt_split[2:])
                     self._set([opt_var, opt_value])
+                elif opt.startswith('use'):
+                    pass
+                else:
+                    self.call_action(opt)
 
     def _replace_template_vars(self, template_path, payload_options):
         template_contents = ''
