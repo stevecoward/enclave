@@ -6,7 +6,8 @@ from helpers import Logger
 from core.models import database, enclave_tables
 
 class EnclaveSession():
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
         home_path = expanduser('~')
         if not os.path.exists('%s/.enclave' % home_path):
             Logger.log('enclave folder doesn\'t exist, creating...',
@@ -15,10 +16,11 @@ class EnclaveSession():
 
         database.create_tables(enclave_tables)
 
-        Logger.log('starting enclave api server...', 'info')
-        subprocess.check_output('tmux new-session -A -d -s enclave-api', shell=True)
-        subprocess.check_output('tmux send-keys -t enclave-api "source env/bin/activate && export FLASK_APP=api/__init__.py" C-m', shell=True)
-        subprocess.check_output('tmux send-keys -t enclave-api "flask run" C-m', shell=True)
+        if 'api' in args and args.api:
+            Logger.log('starting enclave api server...', 'info')
+            subprocess.check_output('tmux new-session -A -d -s enclave-api', shell=True)
+            subprocess.check_output('tmux send-keys -t enclave-api "source env/bin/activate && export FLASK_APP=api/__init__.py" C-m', shell=True)
+            subprocess.check_output('tmux send-keys -t enclave-api "flask run" C-m', shell=True)
 
         self.initiated = datetime.now()
         Logger.log('\n--- new enclave session initiated (%s) ------------\n' %
@@ -34,8 +36,9 @@ class EnclaveSession():
         self.closing_at = datetime.now()
         time_diff = self.closing_at - self.initiated
 
-        subprocess.check_output('tmux send-keys -t enclave-api "C-c" C-m', shell=True)
-        subprocess.check_output('tmux send-keys -t enclave-api "exit" C-m', shell=True)
+        if 'api' in self.args and self.args.api:
+            subprocess.check_output('tmux send-keys -t enclave-api "C-c" C-m', shell=True)
+            subprocess.check_output('tmux send-keys -t enclave-api "exit" C-m', shell=True)
 
         Logger.log('exiting enclave, thanks for playing...', 'info')
         Logger.log('\n--- closing enclave session ({timestamp}) [{elapsed:.2f}s] ------------------'.format(

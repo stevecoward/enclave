@@ -1,4 +1,5 @@
 import sys
+import argparse
 from os.path import expanduser
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
@@ -13,6 +14,11 @@ from core import EnclaveSession
 
 from modules import load_module
 
+parser = argparse.ArgumentParser(description='enclave')
+parser.add_argument('-api', action='store_true', help='toggle api server at runtime')
+args = parser.parse_args()
+
+
 Logger.log("""                     .__                                   
   ____   ____   ____ |  | _____ ___  __ ____               
 _/ __ \ /    \_/ ___\|  | \__  \\  \/ // __ \              
@@ -26,7 +32,7 @@ _/ __ \ /    \_/ ___\|  | \__  \\  \/ // __ \
 
 
 home_path = expanduser('~')
-session = EnclaveSession()
+session = EnclaveSession(args)
 module = ModuleBase()
 action = ''
 
