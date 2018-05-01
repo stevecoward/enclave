@@ -50,6 +50,9 @@ class Client():
         elif content_type == 'json':
             return self._handle_response(self.session.post(self._build_url(uri), json=params, headers=self.headers, cookies=self.cookies, proxies=self.proxies, verify=False))
 
+    def delete(self, uri, params={}):
+        return self._handle_response(self.session.delete(self._build_url(uri), params=params, headers=self.headers, cookies=self.cookies, proxies=self.proxies, verify=False))
+
 class Client2():
     headers = {}
     cookies = {}

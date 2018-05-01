@@ -60,6 +60,13 @@ class DigitalOceanVps():
                 Logger.log('droplet doesn\'t have an ip address yet...', 'info')
         return ip_address
 
+    def delete_droplet(self, uuid):
+        delete_status, delete_response = self.client.delete('/v2/droplets/{}'.format(uuid))
+        if delete_status == 204:
+            Logger.log('droplet {} has been successfully deleted', 'success')
+        else:
+            Logger.log('delete task didn\'t return a 204, instead: {}'.format(delete_status), 'warning')
+
     def create_droplet(self, vps_hash, fingerprint):
         create_status, create_response = self.client.post('/v2/droplets', params={
             'name': '{}'.format(uuid.uuid4()),
@@ -81,4 +88,4 @@ class DigitalOceanVps():
                 created=create_response['droplet']['created_at'],
             )
 
-            Logger.log('created do puppet:{}'.format(create_response['droplet']['id']), 'success')
+            Logger.log('created digitalocean puppet:{}'.format(create_response['droplet']['id']), 'success')

@@ -20,6 +20,8 @@ class EnclaveWordCompleter(Completer):
                 'tomcat/foolishtom',
                 'puppet',
                 'puppet/touch',
+                'puppet/rename',
+                'puppet/destroy',
             ]
         elif word_before_cursor == 'set':
             self.words = self.module.options
