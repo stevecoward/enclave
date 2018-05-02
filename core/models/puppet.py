@@ -6,7 +6,6 @@ class Puppet(BaseModel):
     vps_info = ForeignKeyField(VpsInfo, backref='vps_info')
 
     id = IntegerField(primary_key=True)
-    vps = CharField(null=True)
     uuid = CharField(null=True)
     name = CharField(null=True)
     ram = IntegerField(null=True)
