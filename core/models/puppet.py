@@ -1,7 +1,10 @@
 from peewee import *
 from core.models.db import BaseModel
+from core.models.vps_info import VpsInfo
 
 class Puppet(BaseModel):
+    vps_info = ForeignKeyField(VpsInfo, backref='vps_info')
+
     id = IntegerField(primary_key=True)
     vps = CharField(null=True)
     uuid = CharField(null=True)

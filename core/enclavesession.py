@@ -6,7 +6,7 @@ from helpers import Logger
 from core.models import database, enclave_tables
 
 class EnclaveSession():
-    def __init__(self, args):
+    def __init__(self, args={}):
         self.args = args
         home_path = expanduser('~')
         if not os.path.exists('%s/.enclave' % home_path):

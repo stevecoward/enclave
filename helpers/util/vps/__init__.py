@@ -18,3 +18,7 @@ class Vps():
     def delete(self, *args, **kwargs):
         if self.name == 'digitalocean':
             self.vps.delete_droplet(kwargs['uuid'])
+
+    def refresh(self, *args, **kwargs):
+        if self.name == 'digitalocean':
+            self.vps.get_droplets()

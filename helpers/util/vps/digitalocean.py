@@ -1,16 +1,18 @@
 import json
 import uuid
 import hashlib
+from delorean import Delorean
 from helpers.log import Logger
 from helpers.protocols.http.client import Client as HttpClient
-from core.models.puppet import Puppet
+from core.models import Puppet, VpsInfo
 
 class DigitalOceanVps():
     
-    def __init__(self, token):
+    def __init__(self, api_key):
         client = HttpClient('api.digitalocean.com', 443, debug=False)
         client.set_header('Content-Type', 'application/json')
-        client.set_header('Authorization', 'Bearer {}'.format(token))
+        client.set_header('Authorization', 'Bearer {}'.format(api_key))
+        self.api_key = api_key
         self.client = client
 
     def get_regions(self, check_cache=True):
@@ -45,6 +47,37 @@ class DigitalOceanVps():
             if fingerprint == found_key['ssh_key']['fingerprint']:
                 Logger.log('pubkey confirmed, ready to touch', 'info')
 
+    def get_droplets(self):
+        status, droplets_blob = self.client.get('/v2/droplets')
+        if status == 200:
+            droplets = json.loads(droplets_blob)
+            if len(droplets['droplets']):
+                vps_record = VpsInfo.select().where(VpsInfo.api_key == self.api_key).first()
+                Logger.log('found {} droplets for vps: {}...'.format(len(droplets['droplets']), vps_record.hash[:5]), 'success')
+                for droplet in droplets['droplets']:
+                    puppet_ip = None
+                    if len(droplet['networks']['v4']) > 0:
+                        puppet_ip = droplet['networks']['v4'][0]['ip_address']
+
+                    record = Puppet.select().where(Puppet.uuid == droplet['id']).first()
+                    if not record:
+                        vps_record = VpsInfo.select().where(VpsInfo.api_key == self.api_key).first()
+                        new_puppet = Puppet(vps='digitalocean', uuid=droplet['id'], \
+                            name=droplet['name'], ram=droplet['memory'], cpu=droplet['vcpus'], \
+                            disk=droplet['disk'], ip=puppet_ip, created=Delorean().datetime, \
+                            vps_info_id=vps_record.id
+                        )
+                        new_puppet.save()
+                        Logger.log('added droplet {} to db'.format(droplet['id']), 'success')
+                    else:
+                        record.name = droplet['name']
+                        record.ip = puppet_ip
+                        record.updated = Delorean().datetime
+                        record.save()
+                        Logger.log('updated droplet {}'.format(droplet['name']), 'success')
+        else:
+            Logger.log('received http code: {} when getting droplets'.format(status), 'warning')
+
     def get_ip(self, id):
         ip_address = ''
         status, droplet = self.client.get('/v2/droplets/{}'.format(id))
@@ -63,7 +96,7 @@ class DigitalOceanVps():
     def delete_droplet(self, uuid):
         delete_status, delete_response = self.client.delete('/v2/droplets/{}'.format(uuid))
         if delete_status == 204:
-            Logger.log('droplet {} has been successfully deleted', 'success')
+            Logger.log('droplet {} has been successfully deleted'.format(uuid), 'success')
         else:
             Logger.log('delete task didn\'t return a 204, instead: {}'.format(delete_status), 'warning')
 
@@ -76,6 +109,7 @@ class DigitalOceanVps():
             'ssh_keys': [fingerprint],
             'tags': ['enclave-{}'.format(hashlib.sha1(fingerprint).hexdigest())],
         }, content_type='json')
+
         if create_status == 202:
             create_response = json.loads(create_response)
             
