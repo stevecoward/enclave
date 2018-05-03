@@ -14,3 +14,6 @@ class Puppet(BaseModel):
     ip = CharField(null=True)
     created = DateTimeField()
     updated = DateTimeField(null=True)
+
+    def bootstrap(self):
+        super(Puppet, self).bootstrap()

@@ -8,3 +8,6 @@ class VpsInfo(BaseModel):
     api_key = CharField(null=True)
     secret_key = CharField(null=True)
     created = DateTimeField()
+
+    def bootstrap(self):
+        super(VpsInfo, self).bootstrap()

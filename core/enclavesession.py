@@ -14,7 +14,12 @@ class EnclaveSession():
                        'warning', spool=False)
             os.mkdir('%s/.enclave' % home_path)
 
-        database.create_tables(enclave_tables)
+        if 'bootstrap' in args and args.bootstrap:
+            Logger.log('bootstrapping db...', 'success')
+            database.create_tables(enclave_tables)
+            for table_instance in enclave_tables:
+                table = table_instance()
+                table.bootstrap()
 
         if 'api' in args and args.api:
             Logger.log('starting enclave api server...', 'info')

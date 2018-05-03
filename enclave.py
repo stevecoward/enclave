@@ -16,6 +16,7 @@ from modules import load_module
 
 parser = argparse.ArgumentParser(description='enclave')
 parser.add_argument('-api', action='store_true', help='toggle api server at runtime')
+parser.add_argument('-bootstrap', action='store_true', help='initialize database and table data')
 args = parser.parse_args()
 
 
