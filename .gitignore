@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
 MANIFEST
+site.retry
 env/
 dist/
