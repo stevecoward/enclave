@@ -10,3 +10,23 @@
     update_cache: yes
   with_items:
     - socat
+
+# 
+# redir role teardown
+# 
+- name: teardown socat instances
+  service:
+    name: socat
+    state: stopped
+  ignore_errors: true
+
+- name: remove socat.service files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /lib/systemd/system/socat.service
+    - /root/socat-output
+# 
+# <<< redir role teardown
+# 

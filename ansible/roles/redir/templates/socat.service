@@ -1,0 +1,10 @@
+[Unit]
+Description=socat redirector service
+
+[Service]
+ExecStart=/usr/bin/socat -x -lf /root/socat-output -v tcp-listen:<listen_port>,fork,reuseaddr tcp:<forward_host>:<forward_port>
+StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
+Alias=socat.service
