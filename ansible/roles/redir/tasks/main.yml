@@ -30,7 +30,7 @@
   replace:
     path: /lib/systemd/system/socat.service
     regexp: '(?P<preamble>ExecStart.+:)<listen_port>(?P<mid>,.+:)<forward_host>(?P<end>:)<forward_port>'
-    replace: '\g<preamble>1234\g<mid>45.55.75.49\g<end>4321'
+    replace: '\g<preamble>{{ listen_port }}\g<mid>{{ forward_host }}\g<end>{{ forward_port }}'
 
 - name: start socat service
   service:
