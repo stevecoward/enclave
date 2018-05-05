@@ -1,0 +1,12 @@
+---
+- name: upgrade packages
+  apt:
+    upgrade: dist
+
+- name: uninstall packages for any other role packages (common)
+  apt:
+    name: "{{ item }}"
+    state: absent
+    update_cache: yes
+  with_items:
+    - socat

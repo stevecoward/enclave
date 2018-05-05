@@ -4,7 +4,7 @@ import hashlib
 from delorean import Delorean
 from helpers.log import Logger
 from helpers.protocols.http.client import Client as HttpClient
-from core.models import Puppet, VpsInfo
+from core.models import Puppet, VpsInfo, Role
 
 class DigitalOceanVps():
     
@@ -62,10 +62,11 @@ class DigitalOceanVps():
                     record = Puppet.select().where(Puppet.uuid == droplet['id']).first()
                     if not record:
                         vps_record = VpsInfo.select().where(VpsInfo.api_key == self.api_key).first()
+                        null_role = Role.select().where(Role.name == 'null').first()
                         new_puppet = Puppet(vps='digitalocean', uuid=droplet['id'], \
                             name=droplet['name'], ram=droplet['memory'], cpu=droplet['vcpus'], \
                             disk=droplet['disk'], ip=puppet_ip, created=Delorean().datetime, \
-                            vps_info_id=vps_record.id
+                            vps_info_id=vps_record.id, role_id=null_role.id,
                         )
                         new_puppet.save()
                         Logger.log('added droplet {} to db'.format(droplet['id']), 'success')

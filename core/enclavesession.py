@@ -15,6 +15,7 @@ class EnclaveSession():
             os.mkdir('%s/.enclave' % home_path)
 
         if 'bootstrap' in args and args.bootstrap:
+            # TODO: introduce versioning / check to prompt user to -update, possibly
             Logger.log('bootstrapping db...', 'success')
             database.create_tables(enclave_tables)
             for table_instance in enclave_tables:

@@ -1,0 +1,15 @@
+---
+- name: upgrade packages
+  apt:
+    upgrade: dist
+
+- name: install base packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - build-essential
+    - netcat
+    - socat
+    - sudo
