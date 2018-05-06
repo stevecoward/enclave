@@ -17,7 +17,7 @@ class GenericKeywords():
         pass
 
     def _get_keywords(self):
-        return list(frozenset(self.words))
+        return sorted(list(frozenset(self.words)))
 
 
 class ModuleBase(GenericKeywords):
