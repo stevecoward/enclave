@@ -2,6 +2,7 @@ from peewee import *
 from core.models.db import BaseModel
 from helpers import Logger
 
+
 class VpsInfo(BaseModel):
     id = IntegerField(primary_key=True)
     hash = CharField(unique=True)
@@ -32,6 +33,8 @@ class VpsInfo(BaseModel):
                 self.api_key = record['api_key']
                 self.created = record['created']
                 self.save()
-                Logger.log('bootstrap:vps_info> added \'{}\' to db'.format(record['hash']), 'success')
+                Logger.log('bootstrap:vps_info> added \'{}\' to db'.format(
+                    record['hash']), 'success')
             else:
-            	Logger.log('bootstrap:vps_info> \'{}\' exists, skipping...'.format(record['hash']), 'info')
+                Logger.log('bootstrap:vps_info> \'{}\' exists, skipping...'.format(
+                    record['hash']), 'info')

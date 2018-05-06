@@ -1,5 +1,6 @@
 from helpers.util.vps.digitalocean import DigitalOceanVps
 
+
 class Vps():
     def __init__(self, name, api_key, secret_key='', *args, **kwargs):
         self.name = name
@@ -13,7 +14,8 @@ class Vps():
 
     def create(self, *args, **kwargs):
         if self.name == 'digitalocean':
-            self.vps.create_droplet(kwargs['vps'], kwargs['pubkey_fingerprint'])
+            self.vps.create_droplet(
+                kwargs['vps'], kwargs['pubkey_fingerprint'])
 
     def delete(self, *args, **kwargs):
         if self.name == 'digitalocean':

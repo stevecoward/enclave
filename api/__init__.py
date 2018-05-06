@@ -3,6 +3,7 @@ from core.models import Puppet
 
 app = Flask(__name__)
 
+
 @app.route('/puppets')
 def get_unlinked_puppets():
     unlinked = []

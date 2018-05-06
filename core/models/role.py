@@ -3,6 +3,7 @@ from peewee import *
 from core.models.db import BaseModel
 from helpers import Logger
 
+
 class Role(BaseModel):
     id = IntegerField(primary_key=True)
     name = CharField()
@@ -18,6 +19,8 @@ class Role(BaseModel):
                 self.name = role
                 self.created = Delorean().datetime
                 self.save()
-                Logger.log('bootstrap:role> added \'{}\' to db'.format(role), 'success')
+                Logger.log(
+                    'bootstrap:role> added \'{}\' to db'.format(role), 'success')
             else:
-                Logger.log('bootstrap:role> \'{}\' exists, skipping...'.format(role), 'info')
+                Logger.log(
+                    'bootstrap:role> \'{}\' exists, skipping...'.format(role), 'info')
