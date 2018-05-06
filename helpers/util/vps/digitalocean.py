@@ -50,6 +50,16 @@ class DigitalOceanVps():
             if fingerprint == found_key['ssh_key']['fingerprint']:
                 Logger.log('pubkey confirmed, ready to touch', 'info')
 
+    def rename_droplet(self, uuid, new_name):
+        status, action_response = self.client.post('/v2/droplets/{}/actions'.format(uuid), params={
+            'type': 'rename',
+            'name': new_name,
+        }, content_type='json')
+        if status == 201:
+            Logger.log('successfully renamed droplet to: {}'.format(new_name), 'success')
+        else:
+            Logger.log('received http code: {} when getting droplets'.format(status), 'warning')
+
     def get_droplets(self):
         status, droplets_blob = self.client.get('/v2/droplets')
         if status == 200:

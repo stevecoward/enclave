@@ -24,3 +24,7 @@ class Vps():
     def refresh(self, *args, **kwargs):
         if self.name == 'digitalocean':
             self.vps.get_droplets()
+
+    def rename(self, *args, **kwargs):
+        if self.name == 'digitalocean':
+            self.vps.rename_droplet(kwargs['uuid'], kwargs['new_name'])
