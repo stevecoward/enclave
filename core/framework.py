@@ -134,7 +134,7 @@ class GenericModuleMethods(GenericOptions):
                    exclude_prefix=True, show=False)
         if user_input in ['quit', 'exit']:
             Logger.log(
-                'exiting... don\\t forget to clean up!', 'warning')
+                'exiting... don\'t forget to clean up!', 'warning')
             return False
         return user_input
 
