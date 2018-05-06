@@ -1,0 +1,4 @@
+[submodule "modules"]
+	path = modules
+	url = git@github.com:stevecoward/enclave-modules.git
+	branch = adversary-dev
