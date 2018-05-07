@@ -261,7 +261,7 @@ class AjpForwardRequest(object):
 
     def send_and_receive(self, socket, stream, save_cookies=False):
         res = []
-        i = socket.sendall(self.serialize())
+        socket.sendall(self.serialize())
         if self.method == AjpForwardRequest.POST:
             return res
 

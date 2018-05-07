@@ -1,7 +1,7 @@
 import os
 import socket
 import re
-from pprint import pprint, pformat
+from pprint import pformat
 from helpers.ajp import AjpResponse, AjpForwardRequest, AjpBodyRequest, NotFoundException
 from helpers import *
 
