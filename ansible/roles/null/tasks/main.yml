@@ -27,6 +27,26 @@
   with_items:
     - /lib/systemd/system/socat.service
     - /root/socat-output
+  ignore_errors: true
+
+- name: stop apache service
+  service:
+    name: apache2
+    state: stopped
+  ignore_errors: true
+
+- name: uninstall apache2 packages
+  apt:
+    name: "{{ item }}"
+    state: absent
+    purge: yes
+    update_cache: yes
+  with_items:
+    - apache2
+    - apache2-utils
+    - apache2.2-bin
+    - apache2-common
+  ignore_errors: true
 # 
 # <<< redir role teardown
 # 

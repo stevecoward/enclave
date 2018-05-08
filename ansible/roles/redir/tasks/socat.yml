@@ -1,0 +1,31 @@
+---
+- name: install socat-related packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - socat
+
+- name: teardown socat instances
+  service:
+    name: socat
+    state: stopped
+
+- name: create socat systemd service file
+  template:
+    src: socat.service
+    dest: /lib/systemd/system/socat.service
+    mode: 0644
+  ignore_errors: true
+
+- name: replace service template vars
+  replace:
+    path: /lib/systemd/system/socat.service
+    regexp: '(?P<preamble>ExecStart.+:)<listen_port>(?P<mid>,.+:)<forward_host>(?P<end>:)<forward_port>'
+    replace: '\g<preamble>{{ listen_port }}\g<mid>{{ forward_host }}\g<end>{{ forward_port }}'
+
+- name: start socat service
+  service:
+    name: socat
+    state: started

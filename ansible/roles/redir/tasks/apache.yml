@@ -1,0 +1,31 @@
+---
+- name: redir:apache - install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apache2
+
+- name: redir:apache - enable mod_rewrite
+  apache2_module:
+    name: rewrite
+    state: present
+  notify:
+    - restart apache2
+
+- name: redir:apache - set listen_port
+  replace:
+    path: /etc/apache2/ports.conf
+    regexp: '(?P<pre>000-default.conf\n\nListen\s+)(?P<listen_port>\d+)'
+    replace: '\g<pre>{{ listen_port }}'
+  notify:
+    - restart apache2
+
+- name: redir:apache - set vhost to listen_port
+  replace: 
+    path: /etc/apache2/sites-available/000-default.conf
+    regexp: '(?P<pre>VirtualHost\s+\*:)(?P<listen_port>\d+)'
+    replace: '\g<pre>{{ listen_port }}'
+  notify:
+    - restart apache2

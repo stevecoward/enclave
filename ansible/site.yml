@@ -6,3 +6,7 @@
     - {role: 'c2', tags: 'c2'}
     - {role: 'redir', tags: 'redir'}
     - {role: 'null', tags: 'null'}
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
