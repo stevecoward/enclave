@@ -9,8 +9,12 @@
 
 - name: redir:apache - enable mod_rewrite
   apache2_module:
-    name: rewrite
+    name: "{{ item }}"
     state: present
+  with_items:
+    - rewrite
+    - proxy
+    - proxy_http
   notify:
     - restart apache2
 
@@ -29,3 +33,24 @@
     replace: '\g<pre>{{ listen_port }}'
   notify:
     - restart apache2
+
+- name: redir:apache - set vhost to listen_port
+  replace: 
+    path: /etc/apache2/sites-available/000-default.conf
+    regexp: '(?P<pre>VirtualHost\s+\*:)<listen_port>(?P<end>>)'
+    replace: '\g<pre>{{ listen_port }}\g<end>'
+  notify:
+    - restart apache2
+
+- name: redir:apache - copy htaccess file
+  template:
+    src: apache_htaccess
+    dest: /var/www/html/.htaccess
+    mode: 0644
+  ignore_errors: true
+
+- name: redir:apache - replace template vars
+  replace:
+    path: /var/www/html/.htaccess
+    regexp: '^(?P<pre>RewriteRule.+)<forward_host>(?P<mid>:)<forward_port>(?P<post>.+)'
+    replace: '\g<pre>{{ forward_host }}\g<mid>{{ forward_port }}\g<post>'
