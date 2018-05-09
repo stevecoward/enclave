@@ -139,8 +139,10 @@ class DigitalOceanVps():
             create_response = json.loads(create_response)
 
             vps_record = VpsInfo.select().where(VpsInfo.api_key == self.api_key).first()
+            null_role = Role.select().where(Role.name == 'null').first()
 
             puppet = Puppet.create(vps_info_id=vps_record.id,
+                                   role_id=null_role.id,
                                    uuid=create_response['droplet']['id'],
                                    name=create_response['droplet']['name'],
                                    ram=create_response['droplet']['memory'],
