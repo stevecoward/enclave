@@ -1,26 +1,20 @@
 ---
-- name: upgrade packages
-  apt:
-    upgrade: dist
-
-- name: uninstall packages for any other role packages (common)
-  apt:
-    name: "{{ item }}"
-    state: absent
-    update_cache: yes
-  with_items:
-    - socat
-
 # 
 # redir role teardown
 # 
-- name: teardown socat instances
+- name: null:socat - stop service
   service:
     name: socat
     state: stopped
   ignore_errors: true
 
-- name: remove socat.service files
+- name: null:socat - uninstall packages
+  apt:
+    name: socat
+    state: absent
+    update_cache: yes
+
+- name: null:socat - remove socat.service files
   file:
     path: "{{ item }}"
     state: absent
@@ -29,13 +23,13 @@
     - /root/socat-output
   ignore_errors: true
 
-- name: stop apache service
+- name: null:apache - stop service
   service:
     name: apache2
     state: stopped
   ignore_errors: true
 
-- name: uninstall apache2 packages
+- name: null:apache - uninstall packages
   apt:
     name: "{{ item }}"
     state: absent
@@ -46,7 +40,41 @@
     - apache2-utils
     - apache2.2-bin
     - apache2-common
-  ignore_errors: true
+
+- name: null:iptables - disable ipv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 0
+    state: present
+
+- name: null:iptables - clear input accept
+  iptables:
+    chain: INPUT
+    jump: ACCEPT
+
+- name: null:iptables - clear forward accept
+  iptables:
+    chain: FORWARD
+    jump: ACCEPT
+
+- name: null:iptables - clear output accept
+  iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+
+- name: null:iptables - flush nat table
+  iptables:
+    table: nat
+    flush: true
+
+- name: null:iptables - flush mangle table
+  iptables:
+    table: mangle
+    flush: true
+
+- name: null:iptables - flush all
+  iptables:
+    flush: true
 # 
 # <<< redir role teardown
 # 

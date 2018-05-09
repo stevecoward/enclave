@@ -1,0 +1,42 @@
+---
+- name: redir:iptables - install packages
+  apt:
+    name: '{{ item }}'
+    state: present
+    update_cache: yes
+  with_items:
+    - iptables
+
+- name: redir:iptables - accept inbound
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    match: tcp
+    destination_port: '{{ listen_port }}'
+    jump: ACCEPT
+
+- name: redir:iptables - nat redirect
+  iptables:
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    destination_port: '{{ listen_port }}'
+    jump: DNAT
+    to_destination: '{{ forward_host }}:{{ forward_port }}'
+
+- name: redir:iptables - nat masquerade
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    jump: MASQUERADE
+
+- name: redir:iptables - forward accept
+  iptables:
+    chain: FORWARD
+    jump: ACCEPT
+
+- name: redir:iptables - enable ipv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
