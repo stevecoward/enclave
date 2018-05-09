@@ -1,4 +1,5 @@
 RewriteEngine On
-RewriteCond %{HTTP_USER_AGENT} "android|blackberry|googlebot-mobile|iemobile|ipad|iphone|ipod|opera mobile|palmos|webos" [NC]
+RewriteCond %{REQUEST_URI} ^/(metro91/admin/1/ppptp.jpg|metro91/admin/1/secure.php)/?$
+RewriteCond %{HTTP_USER_AGENT} ^Mozilla/4\.0\ \(compatible;\ MSIE\ 6\.0;\ Windows\ NT\ 5\.1;\ SV1;\ InfoPath\.2\)?$
 RewriteRule ^.*$ http://<forward_host>:<forward_port>%{REQUEST_URI} [P]
-RewriteRule ^.*$ http://<forward_host>:<forward_port>/pages/about-me.html [P]
+RewriteRule ^.*$ http://google.com/? [L,R=302]
