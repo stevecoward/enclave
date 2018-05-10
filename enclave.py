@@ -95,3 +95,7 @@ while True:
 
     elif len(filter(None, [user_input.startswith(x) for x in module.words])):
         module.call_action(user_input)
+
+    elif '42' in user_input:
+        from pprint import pprint; import ipdb; ipdb.set_trace()
+        x = None
