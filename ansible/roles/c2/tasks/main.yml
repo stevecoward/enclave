@@ -1,1 +1,37 @@
 ---
+- name: c2:empire - install packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - python-dev
+    - python-m2crypto
+    - libssl-dev
+
+- name: c2:empire - get empire
+  get_url:
+    url: https://github.com/EmpireProject/Empire/archive/2.4.tar.gz
+    dest: /opt/empire.tgz
+
+- name: c2:empire - extract empire
+  unarchive:
+    src: /opt/empire.tgz
+    dest: /opt
+    remote_src: yes
+
+- name: c2:empire - randomize empire staging key
+  replace:
+    path: /opt/Empire-2.4/setup/setup_database.py
+    regexp: "(?P<pre>STAGING_KEY = os\\.getenv\\('STAGING_KEY', \")BLANK(?P<end>\"\\))"
+    replace: "\\g<pre>RANDOM\\g<end>"
+
+- name: c2:empire - setup empire
+  shell: ./install.sh
+  args:
+    chdir: /opt/Empire-2.4/setup/
+
+# - name: c2:empire - start headless empire
+#   shell: "./empire --headless --password '{{ admin_password }}' &"
+#   args:
+#     chdir: /opt/Empire-2.4

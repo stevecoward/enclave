@@ -78,3 +78,52 @@
 # 
 # <<< redir role teardown
 # 
+
+
+# 
+# c2 role teardown
+# 
+- name: null:empire - kill processes
+  shell: "ps aux | grep 'python \\.\\/empire' | awk '{print $2}' | xargs kill -9"
+  ignore_errors: true
+
+- name: null:empire - remove installation folder and tarball
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /opt/Empire-2.4
+    - /opt/empire.tgz
+  ignore_errors: true
+
+- name: null:empire - remove installed python packages
+  pip:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - altgraph
+    - asn1crypto
+    - certifi
+    - cffi
+    - click
+    - dis3
+    - dropbox
+    - Flask
+    - iptools
+    - itsdangerous
+    - Jinja2
+    - macholib
+    - MarkupSafe
+    - netifaces
+    - pefile
+    - pycparser
+    - PyDispatcher
+    - PyInstaller
+    - pyminifier
+    - python-apt
+    - Werkzeug
+    - zlib-wrapper
+  ignore_errors: true
+# 
+# <<< c2 role teardown
+# 
