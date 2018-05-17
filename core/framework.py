@@ -76,6 +76,8 @@ class GenericModuleMethods(GenericOptions):
                 validator = DictStringValidator(value)
             elif option_item['type'] == 'enum':
                 validator = EnumValidator(value, option_item['enum_options'])
+            elif option_item['type'] == 'file_path':
+                validator = FilePathValidator(value)
             else:
                 validator = GenericValidator(value)
 

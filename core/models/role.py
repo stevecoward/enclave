@@ -24,3 +24,13 @@ class Role(BaseModel):
             else:
                 Logger.log(
                     'bootstrap:role> \'{}\' exists, skipping...'.format(role), 'info')
+
+    @staticmethod
+    def update_puppet_role(puppet, new_role_name):
+        old_puppet_role = puppet.role.name
+        new_role = Role.select().where(
+            Role.name == new_role_name).first()
+        Logger.log('puppet: {} role: {} --> {}'.format(puppet.name,
+                                                       old_puppet_role, new_role.name), 'success')
+        puppet.role_id = new_role.id
+        puppet.save()

@@ -1,4 +1,5 @@
 import re
+import os
 
 
 class GenericValidator():
@@ -9,6 +10,14 @@ class GenericValidator():
 
     def _is_valid(self):
         return self.value is not None
+
+class FilePathValidator(GenericValidator):
+
+    def __init__(self, value):
+        GenericValidator.__init__(self, value)
+
+    def _is_valid(self):
+        return True if os.path.exists(self.value) else False
 
 
 class IntPortValidator(GenericValidator):
