@@ -15,12 +15,12 @@
 
 - name: check redirector profile for iptables
   import_tasks: iptables.yml
-  when: redir_profile == "iptables"
+  when: profile == "iptables"
 
 - name: check redirector profile for socat
   import_tasks: socat.yml
-  when: redir_profile == "socat"
+  when: profile == "socat"
 
 - name: check redirector profile for apache
   import_tasks: apache.yml
-  when: redir_profile == "apache"
+  when: profile == "apache"
