@@ -6,3 +6,4 @@ Flask==1.0
 peewee==3.3.1
 delorean
 ansible
+boto3
